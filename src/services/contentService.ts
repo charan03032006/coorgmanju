@@ -30,6 +30,29 @@ export async function getHotels(options?: { featured?: boolean; destinationId?: 
   if (options?.destinationId) query = query.eq('destination_id', options.destinationId);
   const { data, error } = await query; assertNoError(error, 'hotels'); return (data ?? []).map(mapHotel);
 }
+export async function getHotel(identifier: string) {
+  const { data, error } = await getSupabase().from('hotels').select('*').eq('is_active', true).or(`id.eq.${identifier},slug.eq.${identifier}`).maybeSingle();
+  assertNoError(error, 'hotel'); return data ? mapHotel(data) : null;
+}
+export async function getReviewsForHotel(identifier: string) {
+  const { data, error } = await getSupabase().from('reviews').select('*').eq('is_published', true).eq('hotel_name', identifier).order('created_at', { ascending: false });
+  assertNoError(error, 'hotel reviews'); return (data ?? []).map(mapReview);
+}
+export async function createBookingEnquiry(input: { hotelId?: string; hotelName?: string; name: string; phone: string; email: string; checkIn: string; checkOut: string; guests: string; rooms: string; message: string }) {
+  const { error } = await getSupabase().from('booking_enquiries').insert({
+    hotel_id: input.hotelId || null,
+    hotel_name: input.hotelName || '',
+    guest_name: input.name.trim(),
+    phone: input.phone.trim(),
+    email: input.email.trim(),
+    check_in: input.checkIn,
+    check_out: input.checkOut,
+    guests: Number(input.guests),
+    rooms: Number(input.rooms),
+    message: input.message.trim(),
+  });
+  assertNoError(error, 'booking enquiry');
+}
 export async function getOffers() {
   const { data, error } = await getSupabase().from('offers').select('*').eq('is_active', true).order('sort_order');
   assertNoError(error, 'offers'); return (data ?? []).map(mapOffer);
