@@ -6,15 +6,9 @@ export default function StructuredData() {
       '@context': 'https://schema.org',
       '@type': 'HotelChain',
       name: 'Coorg Manju Group of Hotels',
-      description: 'Premium hospitality group in Coorg, Karnataka offering comfortable stays across Madikeri, Kushalnagar, Virajpet, and Somwarpet.',
-      url: 'https://www.coorgmanjuhotels.com',
-      areaServed: 'Coorg, Karnataka, India',
-      priceRange: '₹2,200 - ₹5,500',
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: '4.8',
-        reviewCount: '2800',
-      },
+      description: 'Hospitality stays and travel support across Mysuru and Coorg, Karnataka.',
+      url: window.location.origin,
+      areaServed: ['Mysuru, Karnataka, India', 'Coorg, Karnataka, India'],
     };
 
     const script = document.createElement('script');
@@ -22,9 +16,7 @@ export default function StructuredData() {
     script.text = JSON.stringify(data);
     document.head.appendChild(script);
 
-    return () => {
-      document.head.removeChild(script);
-    };
+    return () => document.head.removeChild(script);
   }, []);
 
   return null;
