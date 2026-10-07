@@ -14,9 +14,10 @@ export default function HotelDetails() {
 
   useEffect(() => {
     if (!hotelId) return;
-    Promise.all([getHotel(hotelId), getReviewsForHotel(hotelId)])
-      .then(([property, propertyReviews]) => { setHotel(property); setReviews(propertyReviews); })
-      .finally(() => setLoading(false));
+    getHotel(hotelId).then(async (property) => {
+      setHotel(property);
+      if (property) setReviews(await getReviewsForHotel(property.name));
+    }).finally(() => setLoading(false));
   }, [hotelId]);
 
   const gallery = useMemo(() => hotel ? Array.from(new Set([hotel.image, ...hotel.gallery].filter(Boolean))) : [], [hotel]);
